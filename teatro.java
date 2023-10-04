@@ -253,38 +253,46 @@ public class teatro {
 
     // menu de ADM
     public static void menuADM() {
-        if (senhaADM()) {
-            Digitar("Bem vindo Administrador do sistema");
-            Digitar("qual ação deseja realziar ?Digite o numero da opção");
-            Digitar("1 para vizualizar quantidades totais de lugares livres, reservados e confirmados");
-            Digitar("2 numero total de ingressos de estudantes");
-            Digitar("3 valor total arrecadado com os ingressos.");
-            Digitar("4 visualizar mapa de assentos");
-            Digitar("0 para sair do mono ADMINISTRADOR");
-            int opcao = input.nextInt();
+        boolean continuar = true;
+        while (continuar) {
+            if (senhaADM()) {
+                Digitar("Bem vindo Administrador do sistema");
+                Digitar("qual ação deseja realziar ?Digite o numero da opção");
+                Digitar("1 para vizualizar quantidades totais de lugares livres, reservados e confirmados");
+                Digitar("2 numero total de ingressos de estudantes");
+                Digitar("3 valor total arrecadado com os ingressos.");
+                Digitar("4 visualizar mapa de assentos");
+                Digitar("0 para sair do mono ADMINISTRADOR");
+                int opcao = input.nextInt();
 
-            switch (opcao) {
-                case 1:
-                    exibirEstatisticasAssentos();
-                    break;
+                switch (opcao) {
+                    case 1:
+                        exibirEstatisticasAssentos();
+                        break;
 
-                case 2:
-                    exibirFaturamentoEstudantes();
-                    break;
+                    case 2:
+                        exibirFaturamentoEstudantes();
+                        break;
 
-                case 3:
-                    exibirFaturamentoTotal();
-                    break;
+                    case 3:
+                        exibirFaturamentoTotal();
+                        break;
 
-                case 4:
-                    // alguma coisa
-                    break;
+                    case 4:
+                        //
+                        break;
 
-                default:
-                    Digitar("opção invalida");
+                    case 0:
+                        Digitar("saindo do menu adm");
+                        PulaLinha();
+                        continuar = false;
+
+                    default:
+                        Digitar("opção invalida");
+
+                }
 
             }
-
         }
 
     }
