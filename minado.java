@@ -47,48 +47,52 @@ public class minado {
 
         rotina_criar_Campo_Front(campoBack);
 
-
         PulaLinha();
         exibirTabuleiroVedadeiro();
         PulaLinha();
 
-
-        if(jogar()){
+        if (jogar()) {
             Digitar("vc ganahou o jogo ^^");
-        } else{
+        } else {
             Digitar("VOCÊ PERDEU O JOGO !");
         }
 
     }
 
     public static boolean jogar() {
-        exibirTabuleiro();
+        boolean jogoContinua = true;
+        while (jogoContinua) {
+            exibirTabuleiro();
 
-        PulaLinha();
-        Digitar("qual será o seu prox passo ?\n Digite a linha e a coluna \n digite 0 para pisar e 1 para bandeirar ");
-        int linha = input.nextInt();
-        int coluna = input.nextInt();
-        int acao = input.nextInt();
+            PulaLinha();
+            Digitar("qual será o seu prox passo ?\n Digite a linha e a coluna \n digite 0 para pisar e 1 para bandeirar ");
+            int linha = input.nextInt();
+            int coluna = input.nextInt();
+            int acao = input.nextInt();
+            PulaLinha();
 
+            if (verificarMovimentoValido(linha, coluna, acao)) {
+                realizarMovimento(linha, coluna, acao);
+            } else {
+                Digitar("movimento invalido");
+            }
 
-        if(verificarMovimentoValido(linha, coluna, acao)) {
-            realizarMovimento(linha, coluna, acao);
-        } else {
-            Digitar("movimento invalido");
+            if (verificarSePerdeu()) {
+                return false;
+            }
+
+            if (verificarSeGanhou()) {
+                return true;
+            }
+
         }
-
-        if(verificarSePerdeu()) {
-            return false;
-        }
-
-    
-
 
         return false;
+
     }
 
     public static void rotina_criar_Campo_Front(String[][] campoBack) {
-        campoFront = new String[campoBack.length -2][campoBack[0].length -2];
+        campoFront = new String[campoBack.length - 2][campoBack[0].length - 2];
 
         preencherCammpFront(campoFront);
 
@@ -103,21 +107,21 @@ public class minado {
     }
 
     public static boolean verificarMovimentoValido(int l, int c, int act) {
-        if(l <=campoFront.length && c <= campoFront[0].length) {
-           if(act == 0 || act == 1) {
-            return true;
-           } 
+        if (l < campoFront.length && c < campoFront[0].length) {
+            if (act == 0 || act == 1) {
+                return true;
+            }
         }
 
         return false;
     }
 
     public static void realizarMovimento(int l, int c, int act) {
-        if(act == 1) {
+        if (act == 1) {
             campoFront[l][c] = espacoComBandeira;
         }
 
-        if(act ==0) {
+        if (act == 0) {
             verificarLocalExatoBomba(l, c);
         }
     }
@@ -125,7 +129,7 @@ public class minado {
     public static boolean verificarSePerdeu() {
         for (int i = 0; i < campoFront.length; i++) {
             for (int j = 0; j < campoFront[0].length; j++) {
-                if(campoFront[i][j].equals(espacoComBomba)) {
+                if (campoFront[i][j].equals(espacoComBomba)) {
                     return true;
                 }
             }
@@ -134,60 +138,189 @@ public class minado {
         return false;
     }
 
+    public static boolean verificarSeGanhou() {
+        for (int i = 0; i < campoFront.length; i++) {
+            for (int j = 0; j < campoFront[0].length; j++) {
+                if (campoFront[i][j].equals(espacoUNKNOW)) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
     public static void verificarLocalExatoBomba(int l, int c) {
-        if(campoBack[l+1][c+1].equals(espacoComBomba)) {
+
+        if (campoBack[l + 1][c + 1].equals(espacoComBomba)) {
             campoFront[l][c] = espacoComBomba;
+            PulaLinha();
+            exibirTabuleiro();
+            PulaLinha();
         } else {
-            int bombinhas = contadorBombasProximas(l,c);
-            if(bombinhas == 0) {
+            int bombinhas = contadorBombasProximas(l, c);
+            if (bombinhas == 0) {
                 campoFront[l][c] = espacoSemBomba;
-            } else{
-                campoFront[l][c] =  bombinhas + "";
+                caminhoAcima(l, c);
+                caminhoBaixo(l, c);
+                caminhoDireita(l, c);
+                caminhoEsquerda(l, c);
+                caminhoCantoSuperiorEsquerdo(l, c);
+                caminhoCantoInferiorEsquerdo(l, c);
+                caminhoCantoSuperiorDireito(l,c);
+                caminhoCantoInferiorDireito(l,c);
+            } else {
+                campoFront[l][c] = bombinhas + "";
             }
         }
     }
 
+    public static void caminhoAcima(int l, int c) {
+        if (l < campoFront.length && c < campoFront[0].length && l >-1 && c >-1) {
+            int bombinhas = contadorBombasProximas(l, c);
+            if (bombinhas == 0) {
+                campoFront[l][c] = espacoSemBomba;
+                caminhoAcima(l-1, c);
+
+            } else {
+                campoFront[l][c] = bombinhas + "";
+            }
+        }
+    }
+
+    public static void caminhoBaixo(int l, int c) {
+        if (l < campoFront.length && c < campoFront[0].length && l >-1 && c >-1) {
+            int bombinhas = contadorBombasProximas(l, c);
+            if (bombinhas == 0) {
+                campoFront[l][c] = espacoSemBomba;
+                caminhoBaixo(l+1, c);
+
+            } else {
+                campoFront[l][c] = bombinhas + "";
+            }
+        }
+    }
+
+    public static void caminhoDireita(int l, int c) {
+        if (l < campoFront.length && c < campoFront[0].length && l >-1 && c >-1) {
+            int bombinhas = contadorBombasProximas(l, c);
+            if (bombinhas == 0) {
+                campoFront[l][c] = espacoSemBomba;
+                caminhoDireita(l, c+1);
+
+            } else {
+                campoFront[l][c] = bombinhas + "";
+            }
+        }
+    }
+
+     public static void caminhoEsquerda(int l, int c) {
+        if (l < campoFront.length && c < campoFront[0].length && l >-1 && c >-1) {
+            int bombinhas = contadorBombasProximas(l, c);
+            if (bombinhas == 0) {
+                campoFront[l][c] = espacoSemBomba;
+                caminhoEsquerda(l, c-1);
+
+            } else {
+                campoFront[l][c] = bombinhas + "";
+            }
+        }
+    }
+
+     public static void caminhoCantoInferiorDireito(int l, int c) {
+        if (l < campoFront.length && c < campoFront[0].length && l >-1 && c >-1) {
+            int bombinhas = contadorBombasProximas(l, c);
+            if (bombinhas == 0) {
+                campoFront[l][c] = espacoSemBomba;
+                caminhoCantoInferiorDireito(l+1, c +1);
+
+            } else {
+                campoFront[l][c] = bombinhas + "";
+            }
+        }
+    }
+
+    public static void caminhoCantoSuperiorDireito(int l, int c) {
+        if (l < campoFront.length && c < campoFront[0].length && l >-1 && c >-1) {
+            int bombinhas = contadorBombasProximas(l, c);
+            if (bombinhas == 0) {
+                campoFront[l][c] = espacoSemBomba;
+                caminhoCantoSuperiorDireito(l-1, c+ 1);
+
+            } else {
+                campoFront[l][c] = bombinhas + "";
+            }
+        }
+    }
+
+    public static void caminhoCantoSuperiorEsquerdo(int l, int c) {
+        if (l < campoFront.length && c < campoFront[0].length && l >-1 && c >-1) {
+            int bombinhas = contadorBombasProximas(l, c);
+            if (bombinhas == 0) {
+                campoFront[l][c] = espacoSemBomba;
+                caminhoCantoSuperiorEsquerdo(l-1,c -1);
+
+            } else {
+                campoFront[l][c] = bombinhas + "";
+            }
+        }
+    }
+
+    public static void caminhoCantoInferiorEsquerdo(int l, int c) {
+        if (l < campoFront.length && c < campoFront[0].length && l >-1 && c >-1) {
+            int bombinhas = contadorBombasProximas(l, c);
+            if (bombinhas == 0) {
+                campoFront[l][c] = espacoSemBomba;
+                caminhoCantoInferiorEsquerdo(l+1,c -1);
+
+            } else {
+                campoFront[l][c] = bombinhas + "";
+            }
+        }
+    }
+
+
+
     public static int contadorBombasProximas(int l, int c) {
         int contador = 0;
-        
-        //na direita    add na coluna
-        if(campoBack[l+1][c+1 + 1].equals(espacoComBomba)) {
+
+        // na direita add na coluna
+        if (campoBack[l + 1][c + 1 + 1].equals(espacoComBomba)) {
             contador++;
         }
 
-        //na esquerda   sub na coluna
-        if(campoBack[l+1][c+1 -1].equals(espacoComBomba)) {
+        // na esquerda sub na coluna
+        if (campoBack[l + 1][c + 1 - 1].equals(espacoComBomba)) {
             contador++;
         }
 
-        //em cima   sub da linha
-        if(campoBack[l+1 -1][c+1].equals(espacoComBomba)) {
+        // em cima sub da linha
+        if (campoBack[l + 1 - 1][c + 1].equals(espacoComBomba)) {
             contador++;
         }
 
-
-        //em baixo  add na linha
-        if(campoBack[l+1 + 1][c+1].equals(espacoComBomba)) {
+        // em baixo add na linha
+        if (campoBack[l + 1 + 1][c + 1].equals(espacoComBomba)) {
             contador++;
         }
 
-        //canto superior direito    sub da linha | add na coluna
-        if(campoBack[l+1 - 1][c+1 +1].equals(espacoComBomba)) {
+        // canto superior direito sub da linha | add na coluna xxxxx
+        if (campoBack[l + 1 - 1][c + 1 + 1].equals(espacoComBomba)) {
             contador++;
         }
 
-        //canto inferior dirieto    add na linha | add na coluna
-        if(campoBack[l+1 + 1][c+1 +1].equals(espacoComBomba)) {
+        // canto inferior dirieto add na linha | add na coluna
+        if (campoBack[l + 1 + 1][c + 1 + 1].equals(espacoComBomba)) {
             contador++;
         }
 
-        //canto superior esquerdo   sub na linha | sub na coluna
-         if(campoBack[l+1 -1][c+1 -1].equals(espacoComBomba)) {
+        // canto superior esquerdo sub na linha | sub na coluna
+        if (campoBack[l + 1 - 1][c + 1 - 1].equals(espacoComBomba)) {
             contador++;
         }
 
-        //canto inferior esquerdo   add na linha | sub na coluna
-         if(campoBack[l+1 + 1][c+1 -1].equals(espacoComBomba)) {
+        // canto inferior esquerdo add na linha | sub na coluna
+        if (campoBack[l + 1 + 1][c + 1 - 1].equals(espacoComBomba)) {
             contador++;
         }
 
@@ -195,9 +328,9 @@ public class minado {
 
     }
 
-
     public static void exibirTabuleiro() {
         for (int i = 0; i < campoFront.length; i++) {
+            System.out.print(i + " ");
             for (int j = 0; j < campoFront[0].length; j++) {
                 System.out.print(campoFront[i][j] + " ");
             }
@@ -206,11 +339,13 @@ public class minado {
     }
 
     public static void exibirTabuleiroVedadeiro() {
-         for (int i = 0; i < campoBack.length; i++) {
+        for (int i = 0; i < campoBack.length; i++) {
+            System.out.print(i + " ");
             for (int j = 0; j < campoBack[0].length; j++) {
                 System.out.print(campoBack[i][j] + " ");
             }
             System.out.println();
+
         }
     }
 
@@ -258,8 +393,8 @@ public class minado {
         }
         while (!isNumeroMaximoBombas(numeroBombas)) {
 
-            for (int i = 1; i < campoBack.length -1; i++) {
-                for (int j = 1; j < campoBack[0].length -1 ; j++) {
+            for (int i = 1; i < campoBack.length - 1; i++) {
+                for (int j = 1; j < campoBack[0].length - 1; j++) {
 
                     if (!isNumeroMaximoBombas(numeroBombas)) {
                         if (ramdonBomba()) {
